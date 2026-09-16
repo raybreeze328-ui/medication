@@ -1,0 +1,947 @@
+<title>給藥小尖兵</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Noto+Sans+TC:wght@400;500;700;900&family=ZCOOL+KuaiLe&display=swap">
+<style>
+  :root{
+    --bg:#FAF9F3;
+    --surface:#FFFFFF;
+    --surface-2:#F1F0E7;
+    --ink:#17322D;
+    --ink-soft:#5B746D;
+    --line:#DDE3DA;
+    --mint:#159E82;
+    --mint-deep:#0C6B57;
+    --mint-pale:#DFF3EC;
+    --coral:#FF5A4E;
+    --coral-pale:#FFE4E1;
+    --gold:#FFB627;
+    --gold-pale:#FFF2D6;
+    --sky:#3E7FC1;
+    --sky-pale:#E3EEFA;
+    --shadow: 0 10px 28px -14px rgba(23,50,45,.35);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0E1B19;
+      --surface:#15302B;
+      --surface-2:#123330;
+      --ink:#EAF6F2;
+      --ink-soft:#9FC4BB;
+      --line:#204942;
+      --mint:#2FC49F;
+      --mint-deep:#39D9AF;
+      --mint-pale:#183531;
+      --coral:#FF8579;
+      --coral-pale:#3A1F1D;
+      --gold:#FFC857;
+      --gold-pale:#3A2E12;
+      --sky:#75AEEA;
+      --sky-pale:#152A3B;
+      --shadow: 0 10px 28px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E1B19;
+    --surface:#15302B;
+    --surface-2:#123330;
+    --ink:#EAF6F2;
+    --ink-soft:#9FC4BB;
+    --line:#204942;
+    --mint:#2FC49F;
+    --mint-deep:#39D9AF;
+    --mint-pale:#183531;
+    --coral:#FF8579;
+    --coral-pale:#3A1F1D;
+    --gold:#FFC857;
+    --gold-pale:#3A2E12;
+    --sky:#75AEEA;
+    --sky-pale:#152A3B;
+    --shadow: 0 10px 28px -14px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{background:var(--bg);}
+  body{
+    margin:0;
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    padding-inline:16px;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom,0px));
+    -webkit-tap-highlight-color: transparent;
+  }
+  h1,h2,h3,.display{
+    font-family:"ZCOOL KuaiLe","Noto Sans TC",sans-serif;
+    font-weight:400;
+    text-wrap:balance;
+    line-height:1.25;
+  }
+  .num{font-family:"Baloo 2","Noto Sans TC",sans-serif; font-variant-numeric:tabular-nums;}
+  a{color:inherit;}
+  button{font-family:inherit;}
+  [hidden]{display:none!important;}
+
+  .wrap{max-width:640px; margin:0 auto;}
+
+  /* ---------- header ---------- */
+  .topbar{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:40;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:12px 0; margin-bottom:6px;
+    background:linear-gradient(to bottom, var(--bg) 78%, transparent);
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand h1{font-size:1.35rem; margin:0; color:var(--mint-deep);}
+  .brand .sub{font-size:.68rem; color:var(--ink-soft); font-weight:500; letter-spacing:.03em;}
+  .mascot{width:42px; height:42px; flex:none; filter:drop-shadow(0 3px 6px rgba(0,0,0,.15));}
+  .starTally{
+    display:flex; align-items:center; gap:6px;
+    background:var(--surface); border:1px solid var(--line); border-radius:999px;
+    padding:6px 12px; box-shadow:var(--shadow); font-weight:700; font-size:.85rem;
+    white-space:nowrap;
+  }
+  .starTally .g{color:var(--gold); font-size:1rem;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:radial-gradient(120% 140% at 15% 0%, var(--mint-pale), transparent 60%), var(--surface);
+    border:1px solid var(--line);
+    border-radius:28px;
+    padding:22px 20px 20px;
+    margin-bottom:22px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  .hero .pill-deco{
+    position:absolute; border-radius:999px; opacity:.5; pointer-events:none;
+  }
+  .hero h2{font-size:1.7rem; margin:6px 0 6px; color:var(--ink);}
+  .hero h2 em{font-style:normal; color:var(--mint);}
+  .hero p{margin:0 0 14px; color:var(--ink-soft); font-size:.92rem; line-height:1.7; max-width:46ch;}
+  .heroRow{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .heroBadge{
+    display:flex; align-items:center; gap:6px; font-size:.75rem; font-weight:700;
+    background:var(--mint-pale); color:var(--mint-deep); padding:6px 10px; border-radius:999px;
+  }
+
+  /* ---------- map / path ---------- */
+  .map{position:relative; padding:6px 0 10px;}
+  .spine{
+    position:absolute; left:34px; top:14px; bottom:14px; width:3px;
+    background:repeating-linear-gradient(to bottom, var(--mint) 0 10px, transparent 10px 20px);
+    border-radius:3px;
+  }
+  @media(min-width:560px){ .spine{left:50%; transform:translateX(-1.5px);} }
+
+  .node{
+    position:relative; display:flex; align-items:center; gap:14px;
+    margin-bottom:16px; padding-left:0;
+  }
+  @media(min-width:560px){
+    .node{justify-content:flex-start;}
+    .node.right{flex-direction:row-reverse; text-align:right;}
+  }
+  .node .puck{
+    flex:none; width:68px; height:68px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    background:var(--surface); border:3px solid var(--mint);
+    box-shadow:var(--shadow); font-size:1.5rem; position:relative; z-index:2;
+  }
+  .node .puck .lv{position:absolute; top:-8px; right:-6px; background:var(--gold); color:#3a2a00; font-weight:800; font-size:.62rem; padding:2px 6px; border-radius:999px; border:2px solid var(--surface);}
+  .node.locked .puck{border-color:var(--line); filter:grayscale(1); opacity:.7;}
+  .node.done .puck{border-color:var(--gold); background:var(--gold-pale);}
+  .node .card{
+    flex:1; background:var(--surface); border:1px solid var(--line); border-radius:18px;
+    padding:12px 14px; box-shadow:var(--shadow); cursor:pointer; transition:transform .15s ease;
+  }
+  .node .card:active{transform:scale(.98);}
+  .node.locked .card{cursor:default; opacity:.6;}
+  .node .card h3{margin:0 0 2px; font-size:1.05rem;}
+  .node .card p{margin:0; font-size:.76rem; color:var(--ink-soft);}
+  .node .stars{margin-top:6px; font-size:.85rem; letter-spacing:2px;}
+  .node .stars .on{color:var(--gold);}
+  .node .stars .off{color:var(--line);}
+  .lockTag{font-size:.68rem; color:var(--ink-soft); font-weight:700; display:flex; align-items:center; gap:4px; margin-top:6px;}
+
+  .trophyNode .puck{border-color:var(--gold); background:var(--gold-pale); font-size:1.7rem;}
+  .trophyNode.ready .puck{animation:pulse 1.6s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,182,39,.5);}50%{box-shadow:0 0 0 10px rgba(255,182,39,0);}}
+
+  /* ---------- generic screen / stage ---------- */
+  .screen{padding-top:4px;}
+  .stageHead{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+  .backBtn{
+    flex:none; width:38px; height:38px; border-radius:50%; border:1px solid var(--line);
+    background:var(--surface); display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem; cursor:pointer; box-shadow:var(--shadow);
+  }
+  .stageHead h2{margin:0; font-size:1.25rem;}
+  .stageHead .stageSub{font-size:.74rem; color:var(--ink-soft); font-weight:600;}
+  .progressBar{height:8px; border-radius:999px; background:var(--surface-2); overflow:hidden; margin-bottom:16px; border:1px solid var(--line);}
+  .progressBar > i{display:block; height:100%; background:linear-gradient(to right,var(--mint),var(--mint-deep)); border-radius:999px; transition:width .3s ease;}
+
+  .panel{background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:18px 16px; box-shadow:var(--shadow); margin-bottom:16px;}
+
+  /* buttons */
+  .btn{
+    appearance:none; border:none; cursor:pointer; font-weight:700; font-size:.9rem;
+    padding:11px 18px; border-radius:999px; display:inline-flex; align-items:center; gap:6px;
+    transition:transform .12s ease, filter .12s ease;
+  }
+  .btn:active{transform:scale(.96);}
+  .btn.primary{background:var(--mint); color:#fff; box-shadow:0 8px 18px -8px color-mix(in srgb, var(--mint) 70%, transparent);}
+  .btn.primary:hover{filter:brightness(1.05);}
+  .btn.ghost{background:var(--surface-2); color:var(--ink);}
+  .btn.gold{background:var(--gold); color:#3a2a00;}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+  .btnRow{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:6px;}
+
+  /* ---------- quiz ---------- */
+  .qCount{font-size:.72rem; font-weight:700; color:var(--mint-deep); background:var(--mint-pale); padding:3px 10px; border-radius:999px; display:inline-block; margin-bottom:10px;}
+  .qText{font-size:1.08rem; line-height:1.6; margin:0 0 16px; font-weight:700;}
+  .choices{display:grid; gap:10px;}
+  .choice{
+    text-align:left; padding:13px 14px; border-radius:14px; border:1.5px solid var(--line);
+    background:var(--surface-2); font-size:.92rem; cursor:pointer; line-height:1.5;
+    display:flex; gap:10px; align-items:flex-start;
+  }
+  .choice .tag{flex:none; width:22px; height:22px; border-radius:50%; background:var(--surface); border:1.5px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:800;}
+  .choice.correct{border-color:var(--mint); background:var(--mint-pale); color:var(--mint-deep);}
+  .choice.correct .tag{background:var(--mint); color:#fff; border-color:var(--mint);}
+  .choice.wrong{border-color:var(--coral); background:var(--coral-pale); color:var(--coral);}
+  .choice.wrong .tag{background:var(--coral); color:#fff; border-color:var(--coral);}
+  .choice.disabledChoice{cursor:default;}
+  .note{margin-top:14px; padding:12px 14px; border-radius:14px; background:var(--sky-pale); color:var(--ink); font-size:.82rem; line-height:1.6; border:1px dashed var(--sky);}
+  .note b{color:var(--sky);}
+
+  /* ---------- memory game ---------- */
+  .memGrid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px;}
+  @media(max-width:380px){ .memGrid{grid-template-columns:repeat(2,1fr);} }
+  .mCard{
+    aspect-ratio:1/1.05; border-radius:12px; border:1.5px solid var(--line); background:var(--mint-pale);
+    display:flex; align-items:center; justify-content:center; text-align:center; padding:6px;
+    font-size:.72rem; font-weight:700; line-height:1.35; cursor:pointer; color:var(--mint-deep);
+    user-select:none;
+  }
+  .mCard.back::before{content:"💊";font-size:1.5rem;}
+  .mCard.back{color:transparent; background:var(--surface-2);}
+  .mCard.def{font-weight:500; font-size:.64rem;}
+  .mCard.matched{background:var(--gold-pale); border-color:var(--gold); color:#8a5a00; opacity:.85;}
+  .mCard.wrongFlash{border-color:var(--coral); background:var(--coral-pale); animation:shake .35s;}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+  .memStats{display:flex; justify-content:center; gap:18px; font-size:.78rem; color:var(--ink-soft); margin-top:12px; font-weight:700;}
+
+  /* ---------- spotter ---------- */
+  .chipGrid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px;}
+  @media(min-width:420px){ .chipGrid{grid-template-columns:repeat(3,1fr);} }
+  .chip{
+    border:2px solid var(--line); border-radius:14px; padding:12px 8px; text-align:center;
+    background:var(--surface-2); font-weight:700; font-size:.86rem; cursor:pointer; position:relative;
+  }
+  .chip.sel{border-color:var(--coral); background:var(--coral-pale); color:var(--coral);}
+  .chip .flag{position:absolute; top:-8px; right:-8px; font-size:.9rem;}
+  .chip.reveal-tp{border-color:var(--mint); background:var(--mint-pale); color:var(--mint-deep);}
+  .chip.reveal-tn{opacity:.55;}
+  .chip.reveal-fn{border-color:var(--coral); background:var(--coral-pale); color:var(--coral);}
+  .chip.reveal-fp{border-color:var(--coral); background:var(--coral-pale); color:var(--coral); text-decoration:line-through;}
+  .legend{display:flex; gap:12px; flex-wrap:wrap; font-size:.7rem; color:var(--ink-soft); margin-top:12px; justify-content:center;}
+  .legend span{display:inline-flex; align-items:center; gap:4px;}
+  .dot{width:9px; height:9px; border-radius:50%; display:inline-block;}
+
+  /* ---------- order game ---------- */
+  .seqList{display:flex; flex-direction:column; gap:8px; margin-bottom:16px;}
+  .seqSlot{
+    min-height:44px; border-radius:12px; border:1.5px dashed var(--line); background:var(--surface-2);
+    display:flex; align-items:center; gap:10px; padding:8px 12px; font-size:.82rem; font-weight:600;
+  }
+  .seqSlot .n{flex:none; width:24px; height:24px; border-radius:50%; background:var(--surface); border:1.5px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:800; color:var(--ink-soft);}
+  .seqSlot.filled{border-style:solid; border-color:var(--mint); background:var(--mint-pale); color:var(--mint-deep);}
+  .seqSlot.filled .n{background:var(--mint); color:#fff; border-color:var(--mint);}
+  .pool{display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .poolChip{
+    border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; background:var(--surface);
+    font-size:.82rem; font-weight:700; cursor:pointer; box-shadow:var(--shadow);
+  }
+  .poolChip.wrongFlash{animation:shake .35s; border-color:var(--coral); color:var(--coral);}
+  .poolChip.used{display:none;}
+  .mistakeCount{text-align:center; font-size:.78rem; color:var(--ink-soft); font-weight:700; margin-top:10px;}
+
+  /* ---------- complete modal ---------- */
+  .modalBack{
+    position:fixed; inset:0; background:rgba(10,20,18,.55); display:flex; align-items:center; justify-content:center;
+    z-index:80; padding:20px;
+  }
+  .modalCard{
+    background:var(--surface); border-radius:26px; padding:28px 22px 22px; text-align:center; max-width:360px; width:100%;
+    box-shadow:0 24px 60px -20px rgba(0,0,0,.4); border:1px solid var(--line);
+  }
+  .modalCard h3{margin:6px 0 4px; font-size:1.4rem;}
+  .modalStars{font-size:2.2rem; letter-spacing:8px; margin:10px 0;}
+  .modalStars .on{color:var(--gold);}
+  .modalStars .off{color:var(--line);}
+  .modalCard p{color:var(--ink-soft); font-size:.85rem; margin:0 0 16px;}
+
+  /* ---------- certificate ---------- */
+  .certificate{
+    background:linear-gradient(160deg, var(--mint-pale), var(--surface) 55%);
+    border:2px solid var(--mint); border-radius:24px; padding:26px 20px; text-align:center; position:relative; overflow:hidden;
+  }
+  .certificate .ribbon{font-size:2.6rem;}
+  .certificate h2{color:var(--mint-deep); margin:6px 0 2px; font-size:1.6rem;}
+  .certificate .nameLine{font-size:1.2rem; font-weight:700; margin:14px 0 4px; border-bottom:2px dashed var(--mint); display:inline-block; padding:0 10px 6px; min-width:180px;}
+  .certificate .certSub{font-size:.8rem; color:var(--ink-soft); margin-bottom:16px;}
+  .nameInput{
+    border:1.5px solid var(--line); border-radius:12px; padding:9px 12px; font-size:.9rem; width:100%; max-width:240px;
+    background:var(--surface); color:var(--ink); text-align:center; font-weight:700; margin-bottom:14px;
+  }
+  .certGrid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:16px 0; text-align:left;}
+  .certItem{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:8px; font-size:.66rem; text-align:center;}
+  .certItem .st{color:var(--gold); font-size:.8rem;}
+  .totalStars{font-size:1.1rem; font-weight:800; color:var(--mint-deep); margin:6px 0 2px;}
+
+  .confetti{position:fixed; inset:0; pointer-events:none; z-index:90; overflow:hidden;}
+  .confetti span{position:absolute; top:-24px; font-size:1.3rem; animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(105vh) rotate(360deg); opacity:.9;}}
+  @media (prefers-reduced-motion: reduce){
+    .confetti{display:none;}
+    .trophyNode.ready .puck{animation:none;}
+  }
+
+  footer.note2{text-align:center; font-size:.68rem; color:var(--ink-soft); margin:26px 0 6px; line-height:1.7;}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <svg class="mascot" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="34" r="22" fill="var(--mint-pale)" stroke="var(--mint)" stroke-width="3"/>
+        <path d="M14 26 C14 12, 50 12, 50 26 L50 22 C50 22 32 16 14 22 Z" fill="#fff" stroke="var(--mint)" stroke-width="2.5"/>
+        <rect x="27" y="17" width="10" height="10" rx="2" fill="var(--mint)"/>
+        <rect x="29.5" y="14.5" width="5" height="15" rx="1.5" fill="var(--mint)"/>
+        <rect x="24.5" y="19.5" width="15" height="5" rx="1.5" fill="var(--mint)"/>
+        <circle cx="24" cy="36" r="2.4" fill="var(--ink)"/>
+        <circle cx="40" cy="36" r="2.4" fill="var(--ink)"/>
+        <path d="M23 44 Q32 50 41 44" stroke="var(--ink)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1>給藥小尖兵</h1>
+        <div class="sub">奇美醫院護理部・用藥安全闖關訓練</div>
+      </div>
+    </div>
+    <div class="starTally"><span class="g">⭐</span><span class="num" id="tallyText">0 / 18</span></div>
+  </div>
+
+  <!-- ================= MAP SCREEN ================= -->
+  <div class="screen" id="screen-map">
+    <div class="hero">
+      <div class="pill-deco" style="width:120px;height:44px;background:var(--gold-pale);top:-14px;right:-24px;transform:rotate(-18deg);"></div>
+      <div class="pill-deco" style="width:70px;height:70px;background:var(--sky-pale);bottom:-30px;left:-20px;"></div>
+      <div class="heroBadge">🎯 新進人員限定關卡</div>
+      <h2>成為病人用藥安全的<em>最後一道防線</em>！</h2>
+      <p>護理人員是給藥流程中最後的守護者。闖過六個關卡，練熟三讀七對、給藥頻率、臨床情境判斷、高警訊藥物、特殊給藥技巧與完整流程，蒐集星星拿到結業證書吧！</p>
+      <div class="heroRow">
+        <span class="heroBadge">📋 依據 1121127 用藥安全教材</span>
+        <span class="heroBadge">📘 總院-護理-作標-3-01030</span>
+      </div>
+    </div>
+
+    <div class="map" id="mapList"></div>
+  </div>
+
+  <!-- ================= LEVEL 1 : MEMORY MATCH ================= -->
+  <div class="screen" id="screen-1" hidden>
+    <div class="stageHead">
+      <button class="backBtn" data-back>←</button>
+      <div>
+        <h2>🃏 三讀七對・翻牌成雙</h2>
+        <div class="stageSub">找出用語與說明的正確配對</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="memGrid" id="memGrid"></div>
+      <div class="memStats"><span>🔄 已翻 <span id="memMoves" class="num">0</span> 次</span><span>✅ 配對 <span id="memFound" class="num">0</span>/8</span></div>
+    </div>
+  </div>
+
+  <!-- ================= GENERIC QUIZ SCREEN (levels 2,3,5) ================= -->
+  <div class="screen" id="screen-quiz" hidden>
+    <div class="stageHead">
+      <button class="backBtn" data-back>←</button>
+      <div>
+        <h2 id="quizTitle"></h2>
+        <div class="stageSub" id="quizSub"></div>
+      </div>
+    </div>
+    <div class="progressBar"><i id="quizProgress" style="width:0%"></i></div>
+    <div class="panel">
+      <div class="qCount" id="qCount"></div>
+      <p class="qText" id="qText"></p>
+      <div class="choices" id="qChoices"></div>
+      <div class="note" id="qNote" hidden></div>
+      <div class="btnRow">
+        <button class="btn primary" id="qNextBtn" hidden>下一題 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= LEVEL 4 : SPOTTER ================= -->
+  <div class="screen" id="screen-4" hidden>
+    <div class="stageHead">
+      <button class="backBtn" data-back>←</button>
+      <div>
+        <h2>🚨 高警訊藥物抓一抓</h2>
+        <div class="stageSub">點選你認為需要「雙重核對」的高警訊藥物</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="chipGrid" id="chipGrid"></div>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--mint)"></span>高警訊藥物</span>
+        <span><span class="dot" style="background:var(--line)"></span>一般藥物</span>
+      </div>
+      <div class="btnRow"><button class="btn primary" id="spotterSubmit">送出核對結果 ✅</button></div>
+    </div>
+  </div>
+
+  <!-- ================= LEVEL 6 : ORDER ================= -->
+  <div class="screen" id="screen-6" hidden>
+    <div class="stageHead">
+      <button class="backBtn" data-back>←</button>
+      <div>
+        <h2>🏁 給藥流程大魔王</h2>
+        <div class="stageSub">依正確順序點選給藥技術流程步驟</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="seqList" id="seqList"></div>
+      <div class="pool" id="poolList"></div>
+      <div class="mistakeCount">⚠️ 點錯 <span id="orderMistakes" class="num">0</span> 次</div>
+    </div>
+  </div>
+
+  <!-- ================= CERTIFICATE ================= -->
+  <div class="screen" id="screen-cert" hidden>
+    <div class="stageHead">
+      <button class="backBtn" data-back>←</button>
+      <div><h2>🏆 結業證書</h2><div class="stageSub">恭喜完成用藥安全全部關卡</div></div>
+    </div>
+    <div class="certificate">
+      <div class="ribbon">🎖️</div>
+      <h2>用藥安全小尖兵</h2>
+      <div class="certSub">Chi Mei Medication Safety Cadet</div>
+      <input class="nameInput" id="certName" placeholder="輸入你的姓名" maxlength="20"/>
+      <div class="nameLine" id="certNameShow">護理新進人員</div>
+      <div class="totalStars">⭐ 總星數 <span class="num" id="certTotal">0</span> / 18</div>
+      <div class="certGrid" id="certGrid"></div>
+      <div class="certSub" id="certDate"></div>
+    </div>
+    <div class="btnRow" style="margin-top:16px;">
+      <button class="btn ghost" id="resetProgress">🔄 重新挑戰全部關卡</button>
+    </div>
+  </div>
+
+  <footer class="note2">內容整理自「用藥安全」教育訓練簡報與「給藥作業指導書」（總院-護理-作標-3-01030），僅供護理新進人員練習使用。</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- persistence ---------------- */
+  var STORAGE_KEY = "givesafe_cadet_v1";
+  var state = { stars:{1:null,2:null,3:null,4:null,5:null,6:null}, name:"" };
+  try{
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if(saved){ var parsed = JSON.parse(saved); if(parsed && parsed.stars) state = parsed; }
+  }catch(e){}
+  function persist(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+
+  function totalStars(){
+    var t=0; for(var k in state.stars){ if(state.stars[k]) t+=state.stars[k]; } return t;
+  }
+  function updateTally(){
+    document.getElementById("tallyText").textContent = totalStars() + " / 18";
+  }
+
+  /* ---------------- screen switching ---------------- */
+  function showScreen(id){
+    document.querySelectorAll(".screen").forEach(function(s){ s.hidden = true; });
+    document.getElementById(id).hidden = false;
+    window.scrollTo({top:0, behavior:"instant" in window ? "instant":"auto"});
+  }
+  document.querySelectorAll("[data-back]").forEach(function(b){
+    b.addEventListener("click", function(){ renderMap(); showScreen("screen-map"); });
+  });
+
+  /* ================= LEVEL DEFINITIONS FOR MAP ================= */
+  var LEVELS = [
+    {id:1, icon:"🃏", title:"三讀七對記憶配對", sub:"翻牌配對關鍵用語"},
+    {id:2, icon:"⏰", title:"給藥頻率密碼", sub:"QD／BID／Q4H 大考驗"},
+    {id:3, icon:"🧭", title:"臨床情境判斷", sub:"小尖兵的十道抉擇"},
+    {id:4, icon:"🚨", title:"高警訊藥物抓一抓", sub:"雙重核對特訓"},
+    {id:5, icon:"🎯", title:"特殊給藥技巧", sub:"十八般武藝配對"},
+    {id:6, icon:"🏁", title:"給藥流程大魔王", sub:"完整流程終極排序"}
+  ];
+
+  function isUnlocked(id){
+    if(id===1) return true;
+    return state.stars[id-1] != null;
+  }
+  function allDone(){
+    for(var i=1;i<=6;i++){ if(state.stars[i]==null) return false; }
+    return true;
+  }
+
+  function starsHTML(n, cls){
+    var h="";
+    for(var i=1;i<=3;i++){ h += '<span class="'+(i<=n?"on":"off")+'">'+(i<=n?"★":"☆")+'</span>'; }
+    return h;
+  }
+
+  function renderMap(){
+    updateTally();
+    var el = document.getElementById("mapList");
+    var html = '<div class="spine"></div>';
+    LEVELS.forEach(function(lv, idx){
+      var unlocked = isUnlocked(lv.id);
+      var done = state.stars[lv.id] != null;
+      var side = idx % 2 === 0 ? "" : "right";
+      html += '<div class="node '+side+' '+(unlocked?"":"locked")+' '+(done?"done":"")+'" data-open="'+lv.id+'">';
+      html += '  <div class="puck">'+lv.icon+'<span class="lv">'+lv.id+'</span></div>';
+      html += '  <div class="card">';
+      html += '    <h3>'+lv.title+'</h3>';
+      html += '    <p>'+lv.sub+'</p>';
+      if(unlocked){
+        html += '<div class="stars">'+starsHTML(state.stars[lv.id]||0)+'</div>';
+      } else {
+        html += '<div class="lockTag">🔒 先完成上一關解鎖</div>';
+      }
+      html += '  </div>';
+      html += '</div>';
+    });
+    var certReady = allDone();
+    html += '<div class="node trophyNode '+(certReady?"ready":"locked")+'" data-open="cert">';
+    html += '  <div class="puck">🏆</div>';
+    html += '  <div class="card"><h3>結業證書</h3><p>'+(certReady?"六關全數完成，前往領證書！":"完成六個關卡後解鎖")+'</p></div>';
+    html += '</div>';
+    el.innerHTML = html;
+
+    el.querySelectorAll(".node").forEach(function(node){
+      node.addEventListener("click", function(){
+        var target = node.getAttribute("data-open");
+        if(node.classList.contains("locked")) return;
+        if(target==="cert"){ openCertificate(); return; }
+        openLevel(parseInt(target,10));
+      });
+    });
+  }
+
+  function openLevel(id){
+    if(id===1) return startLevel1();
+    if(id===2) return startQuiz(2, QUIZ2, "⏰ 給藥頻率密碼", "破解 QD／BID／Q4H 等給藥頻率");
+    if(id===3) return startQuiz(3, QUIZ3, "🧭 臨床情境判斷", "十個真實臨床給藥情境");
+    if(id===4) return startLevel4();
+    if(id===5) return startQuiz(5, QUIZ5, "🎯 特殊給藥技巧", "配對正確的給藥小技巧");
+    if(id===6) return startLevel6();
+  }
+
+  /* ================= COMPLETE MODAL + CONFETTI ================= */
+  function starsFromScore(ratio){
+    var s = 1;
+    if(ratio >= 0.6) s = 2;
+    if(ratio >= 0.9) s = 3;
+    return s;
+  }
+  function starsFromMistakes(mistakes){
+    var s = 1;
+    if(mistakes <= 6) s = 2;
+    if(mistakes <= 2) s = 3;
+    return s;
+  }
+
+  function fireConfetti(){
+    if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var wrap = document.createElement("div");
+    wrap.className = "confetti";
+    var emo = ["🎉","⭐","💊","🎊","✨"];
+    for(var i=0;i<22;i++){
+      var s = document.createElement("span");
+      s.textContent = emo[Math.floor(Math.random()*emo.length)];
+      s.style.left = (Math.random()*100)+"vw";
+      s.style.animationDuration = (1.6+Math.random()*1.4)+"s";
+      s.style.animationDelay = (Math.random()*0.4)+"s";
+      wrap.appendChild(s);
+    }
+    document.body.appendChild(wrap);
+    setTimeout(function(){ wrap.remove(); }, 3200);
+  }
+
+  function finishLevel(id, stars, statsLine){
+    var prev = state.stars[id];
+    state.stars[id] = Math.max(stars, prev==null?stars:prev);
+    persist();
+    updateTally();
+    fireConfetti();
+
+    var back = document.createElement("div");
+    back.className = "modalBack";
+    back.innerHTML =
+      '<div class="modalCard">'+
+      '  <div style="font-size:2.4rem;">'+ (stars===3?"🏅":stars===2?"🎉":"👍") +'</div>'+
+      '  <h3>關卡完成！</h3>'+
+      '  <div class="modalStars">'+starsHTML(stars)+'</div>'+
+      '  <p>'+(statsLine||"")+'</p>'+
+      '  <div class="btnRow">'+
+      '    <button class="btn ghost" id="mReplay">🔁 再玩一次</button>'+
+      '    <button class="btn primary" id="mMap">🗺️ 回地圖</button>'+
+      '  </div>'+
+      '</div>';
+    document.body.appendChild(back);
+    back.querySelector("#mMap").addEventListener("click", function(){ back.remove(); renderMap(); showScreen("screen-map"); });
+    back.querySelector("#mReplay").addEventListener("click", function(){ back.remove(); openLevel(id); });
+  }
+
+  /* ================= LEVEL 1 : MEMORY MATCH ================= */
+  var PAIRS1 = [
+    {t:"第一讀", d:"取對正確藥盒"},
+    {t:"第二讀", d:"取藥時核對病人姓名、病歷號、出生年月日"},
+    {t:"第三讀", d:"歸藥或丟棄藥物時再次確認"},
+    {t:"病人對", d:"核對兩種以上病人辨識資料"},
+    {t:"藥物對", d:"核對藥名與劑型正確"},
+    {t:"劑量對", d:"核對顆粒總數、稀釋劑量或流速"},
+    {t:"時間對", d:"常規藥物於時間點前後30分鐘給藥"},
+    {t:"紀錄對", d:"給藥後點選「給藥確認」完成紀錄"}
+  ];
+  var mem = {};
+  function startLevel1(){
+    var cards = [];
+    PAIRS1.forEach(function(p, i){
+      cards.push({pair:i, type:"t", text:p.t});
+      cards.push({pair:i, type:"d", text:p.d});
+    });
+    // shuffle
+    for(var i=cards.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var tmp = cards[i]; cards[i]=cards[j]; cards[j]=tmp;
+    }
+    mem = {cards:cards, flipped:[], found:0, moves:0, mismatches:0, busy:false};
+    var grid = document.getElementById("memGrid");
+    grid.innerHTML = "";
+    cards.forEach(function(c, idx){
+      var btn = document.createElement("button");
+      btn.className = "mCard back";
+      btn.setAttribute("data-idx", idx);
+      grid.appendChild(btn);
+      btn.addEventListener("click", function(){ flipCard(idx); });
+    });
+    document.getElementById("memMoves").textContent = "0";
+    document.getElementById("memFound").textContent = "0";
+    showScreen("screen-1");
+  }
+  function flipCard(idx){
+    if(mem.busy) return;
+    var el = document.querySelector('#memGrid [data-idx="'+idx+'"]');
+    if(el.classList.contains("matched") || el.classList.contains("open")) return;
+    if(mem.flipped.indexOf(idx) !== -1) return;
+
+    var c = mem.cards[idx];
+    el.classList.remove("back");
+    el.classList.add("open", c.type==="d" ? "def":"");
+    el.textContent = c.text;
+    mem.flipped.push(idx);
+
+    if(mem.flipped.length === 2){
+      mem.busy = true;
+      mem.moves++;
+      document.getElementById("memMoves").textContent = mem.moves;
+      var a = mem.cards[mem.flipped[0]], b = mem.cards[mem.flipped[1]];
+      var elA = document.querySelector('#memGrid [data-idx="'+mem.flipped[0]+'"]');
+      var elB = document.querySelector('#memGrid [data-idx="'+mem.flipped[1]+'"]');
+      if(a.pair === b.pair && mem.flipped[0] !== mem.flipped[1]){
+        setTimeout(function(){
+          elA.classList.add("matched"); elB.classList.add("matched");
+          mem.found++;
+          document.getElementById("memFound").textContent = mem.found;
+          mem.flipped = []; mem.busy = false;
+          if(mem.found === PAIRS1.length){
+            var stars = starsFromMistakes(mem.mismatches);
+            setTimeout(function(){ finishLevel(1, stars, "共翻牌 "+mem.moves+" 次，配對錯誤 "+mem.mismatches+" 次。"); }, 400);
+          }
+        }, 380);
+      } else {
+        mem.mismatches++;
+        elA.classList.add("wrongFlash"); elB.classList.add("wrongFlash");
+        setTimeout(function(){
+          elA.classList.remove("open","def","wrongFlash"); elA.classList.add("back"); elA.textContent="";
+          elB.classList.remove("open","def","wrongFlash"); elB.classList.add("back"); elB.textContent="";
+          mem.flipped = []; mem.busy = false;
+        }, 700);
+      }
+    }
+  }
+
+  /* ================= GENERIC QUIZ (levels 2 / 3 / 5) ================= */
+  var QUIZ2 = [
+    {q:"醫囑寫「QD」（每日一次），常規給藥時間點為？", c:["07:00","09:00","13:00","21:00"], a:1, n:"QD＝09AM；若為 QD AC（飯前）才是 07AM。"},
+    {q:"「BID」（每日兩次）的給藥時間點為？", c:["09-18","09-13-18","01-09-17","09-21"], a:0, n:"BID＝09-18。"},
+    {q:"「TID」（每日三次）的給藥時間點為？", c:["09-18","09-13-18","05-11-17-23","09-13-18-21"], a:1, n:"TID＝09-13-18。"},
+    {q:"「QID」（每日四次）的給藥時間點為？", c:["09-13-18-21","01-05-09-13-17-21","09-21","05-11-17-23"], a:0, n:"QID＝09-13-18-21。"},
+    {q:"「Q4H」代表什麼意思？", c:["每4天一次","每4小時一次","每次4顆","第4次給藥"], a:1, n:"Q4H＝每4小時一次，時間點為 01-05-09-13-17-21。"},
+    {q:"「Q6H」的給藥時間點為？", c:["01-09-17","05-11-17-23","09-21","09-18"], a:1, n:"Q6H＝05-11-17-23。"},
+    {q:"「Q8H」的給藥時間點為？", c:["01-09-17","05-11-17-23","09-21","09-13-18"], a:0, n:"Q8H＝01-09-17。"},
+    {q:"「Q12H」的給藥時間點為？", c:["09-18","01-09-17","09-21","09-13-18-21"], a:2, n:"Q12H＝09-21。"},
+    {q:"「QOD」代表什麼意思？", c:["每日一次","隔一天給藥一次","每週一次","一次只給一顆"], a:1, n:"QOD＝隔一天09AM給藥一次。"},
+    {q:"STAT 醫囑，應於醫囑開立後多久內給藥？", c:["10分鐘內","30分鐘內","1小時內","2小時內"], a:1, n:"STAT：醫囑開立後30分鐘內給藥。"},
+    {q:"常規藥物給藥時間，容許誤差範圍為？", c:["前後15分鐘","前後30分鐘","前後1小時","無限制"], a:1, n:"時間對：常規藥物於給藥時間點前後30分鐘內給藥。"},
+    {q:"「PRN」代表什麼意思？", c:["需要時給藥","立刻給藥","每日一次","僅給一次"], a:0, n:"PRN＝需要時（必要時）用藥，給藥後須進行給藥追蹤。"}
+  ];
+
+  var QUIZ3 = [
+    {q:"行動護理車因環境限制無法進入病人單位時，該如何核對基本資料？", c:["直接憑記憶給藥","以貼有病人資料的標籤核對電腦資料，至床旁再與病人及手圈確認","請家屬口頭報姓名即可","跳過核對，先給藥再補登"], a:1, n:"應以標籤核對電腦上病人基本資料，至病人床旁時再以標籤資料與病人、手圈進行確認。"},
+    {q:"病人請假外出，可以讓他把藥物帶回家自行服用嗎？", c:["可以，方便病人","一律不可以，除非醫師醫囑開立","只要護理師同意就可以","家屬簽名同意即可"], a:1, n:"病人請假外出一律不可外帶藥物返家（除醫師醫囑開立），並須於常規時間後詢問醫師是否補給藥並紀錄。"},
+    {q:"病人意識不清且身旁無家屬、也無床頭卡時，如何核對身分？", c:["直接略過辨識", "以手圈、電腦與書面資料（如病人標籤、藥袋）進行核對", "詢問隔壁床病人", "憑護理紀錄猜測"], a:1, n:"無家屬且無床頭卡者，須以手圈、電腦與書面資料（病人標籤、藥袋等）進行病人身分核對。"},
+    {q:"遇到系統中標示「★★」的高警訊藥物，正確做法是？", c:["自己核對一次就好","找另一位護理師進行雙重核對","請病人自己核對","延後給藥即可"], a:1, n:"兩顆星代表高警訊且須雙重核對藥物，須先尋找另一位護理師前來雙重核對。"},
+    {q:"給藥途中若因故離開工作車（給藥中斷），回來後應該怎麼做？", c:["從中斷的地方繼續","重新執行給藥前、給藥中的完整技術流程（重新三讀七對）","直接補登紀錄即可","請下一班接手"], a:1, n:"若給藥過程中斷，須重新執行給藥前步驟1~2及給藥中步驟1~4，重新進行給藥。"},
+    {q:"口服給藥後，簽核前最重要的確認動作是？", c:["確認藥袋已丟棄","親眼看病人確實服下藥物","詢問家屬藥有沒有吃","填完紀錄就好"], a:1, n:"病人確實服下藥物後，才可簽核；口服給藥須看病人服下。"},
+    {q:"住院病人想使用自己攜帶的藥物，正確處理方式是？", c:["病人可自行保管、自己服用","須經醫師開立「自備藥醫囑」，由護理人員依醫囑給藥，不得自備自服","直接用院內同成分藥物取代","不需要醫囑，護理師口頭同意即可"], a:1, n:"自備藥須由醫師開立自備藥醫囑，經護理人員依醫囑給藥，不得交由病人自備自服。"},
+    {q:"大量點滴抽藥後，若無法立即在病床旁給予藥物，該怎麼處理？", c:["先放在治療車上不用標示","將藥物抽至空針或點滴加藥，標註病人姓名、病歷號、藥名、劑量、途徑並黏貼標籤","直接丟棄重新抽藥","請下一位同仁自行判斷"], a:1, n:"需標註病人姓名、病歷號、藥名、劑量、途徑，以手寫或列印標籤黏貼於點滴袋或針筒上。"},
+    {q:"「給藥 Time out」原則中，口服藥應再次核對什麼？", c:["藥物顏色","總顆數","藥袋大小","病房號碼"], a:1, n:"口服藥 Time out：再次核對總顆數；針劑則再次核對劑量。"},
+    {q:"初次給藥時，護理人員應主動提供病人哪些資訊？", c:["藥物價格","藥物作用、副作用、注意事項","藥廠名稱","無須提供任何資訊"], a:1, n:"初次給藥之藥物，須主動提供病人該藥之作用、副作用、注意事項。"}
+  ];
+
+  var QUIZ5 = [
+    {q:"病人同時有眼藥水與藥膏（油劑）要使用，正確順序與間隔為？", c:["先藥膏，再馬上用藥水","先藥水，等待約3-5分鐘後再用藥膏","同時擠在眼睛裡","藥膏藥水都可先用，無所謂"], a:1, n:"先使用藥水約3-5分鐘後，再使用藥膏（油劑）。"},
+    {q:"執行鼻滴藥時，病人應維持什麼姿勢？", c:["低頭姿勢","仰頭姿勢，避免藥物流出","側躺不動","站立前傾"], a:1, n:"鼻滴藥須維持仰頭姿勢，以免藥物流出。"},
+    {q:"使用肛門栓劑時，若病人出現什麼情況應立即停止？", c:["打嗝","頭痛、冒汗","想上廁所","覺得癢"], a:1, n:"衛教病人張口呼吸減少腹壓以利塞入；若病人主訴頭痛、冒汗，應立刻停止。"},
+    {q:"貼片製劑使用多久後才會達到血中有效濃度？", c:["1-2小時","12-24小時","72-96小時","一週以上"], a:1, n:"貼片使用12~24小時後才達血中有效濃度，持續作用為72小時。"},
+    {q:"執行皮下注射（如胰島素）時，為什麼要輪替注射部位？", c:["讓病人比較不無聊","避免組織壞死","比較省藥","方便護理記錄"], a:1, n:"每次注射應距離上次注射部位約1指寬，並輪換部位，以免組織壞死。"},
+    {q:"直接靜脈注射（IV push）給藥前後，應以何種溶液沖注？", c:["葡萄糖水","生理食鹽水", "蒸餾水", "藥物本身"], a:1, n:"每次給藥前後以針筒推注生理食鹽水，避免藥物彼此間不相容反應及藥物沉積造成阻塞。"},
+    {q:"皮下留置針應該多久更換一次？", c:["每24小時","每3天","每7天","每30天"], a:2, n:"皮下留置針應每7天更換一次。"},
+    {q:"若胰島素剛從冰箱冷藏取出，注射前應如何處理？", c:["立即注射不需等待","置於室溫5-10分鐘再注射，避免不適","放進熱水加溫後注射","冷藏狀態注射效果更好"], a:1, n:"若胰島素自冰箱冷藏取出，應置於室溫5-10分鐘再進行注射，避免造成不適。"}
+  ];
+
+  var quizState = {};
+  function startQuiz(levelId, questions, title, sub){
+    quizState = {levelId:levelId, questions:questions, idx:0, correct:0, answered:false};
+    document.getElementById("quizTitle").textContent = title;
+    document.getElementById("quizSub").textContent = sub;
+    renderQuestion();
+    showScreen("screen-quiz");
+  }
+  function renderQuestion(){
+    var qs = quizState.questions;
+    var i = quizState.idx;
+    var item = qs[i];
+    quizState.answered = false;
+    document.getElementById("quizProgress").style.width = Math.round((i/qs.length)*100)+"%";
+    document.getElementById("qCount").textContent = "第 "+(i+1)+" / "+qs.length+" 題";
+    document.getElementById("qText").textContent = item.q;
+    document.getElementById("qNote").hidden = true;
+    document.getElementById("qNextBtn").hidden = true;
+    var box = document.getElementById("qChoices");
+    box.innerHTML = "";
+    var labels = ["A","B","C","D"];
+    item.c.forEach(function(choiceText, ci){
+      var b = document.createElement("button");
+      b.className = "choice";
+      b.innerHTML = '<span class="tag">'+labels[ci]+'</span><span>'+choiceText+'</span>';
+      b.addEventListener("click", function(){ answerQuiz(ci); });
+      box.appendChild(b);
+    });
+  }
+  function answerQuiz(ci){
+    if(quizState.answered) return;
+    quizState.answered = true;
+    var item = quizState.questions[quizState.idx];
+    var buttons = document.querySelectorAll("#qChoices .choice");
+    buttons.forEach(function(b, idx){
+      b.classList.add("disabledChoice");
+      if(idx === item.a) b.classList.add("correct");
+      else if(idx === ci) b.classList.add("wrong");
+    });
+    if(ci === item.a) quizState.correct++;
+    if(item.n){
+      var note = document.getElementById("qNote");
+      note.hidden = false;
+      note.innerHTML = "<b>解析：</b>"+item.n;
+    }
+    var nextBtn = document.getElementById("qNextBtn");
+    nextBtn.hidden = false;
+    nextBtn.textContent = (quizState.idx === quizState.questions.length-1) ? "看結果 🎉" : "下一題 →";
+    nextBtn.onclick = function(){
+      if(quizState.idx === quizState.questions.length-1){
+        document.getElementById("quizProgress").style.width = "100%";
+        var ratio = quizState.correct / quizState.questions.length;
+        var stars = starsFromScore(ratio);
+        finishLevel(quizState.levelId, stars, "答對 "+quizState.correct+" / "+quizState.questions.length+" 題。");
+      } else {
+        quizState.idx++;
+        renderQuestion();
+      }
+    };
+  }
+
+  /* ================= LEVEL 4 : SPOTTER ================= */
+  var DRUGS4 = [
+    {name:"Dopamine\n多巴胺", ha:true},
+    {name:"Morphine\n嗎啡", ha:true},
+    {name:"Fentanyl\n吩坦尼", ha:true},
+    {name:"Nicardipine\n療悸平", ha:true},
+    {name:"Cis-Atracurium\n肌肉鬆弛劑", ha:true},
+    {name:"Nitroglycerin\n硝化甘油", ha:true},
+    {name:"KCl 15%\n高濃度氯化鉀", ha:true},
+    {name:"Furosemide\n利尿劑", ha:false},
+    {name:"NaCl 0.9%\n生理食鹽水", ha:false},
+    {name:"Spironolactone\n利尿劑", ha:false},
+    {name:"Colchicine\n秋水仙素", ha:false},
+    {name:"Human Albumin\n人類白蛋白", ha:false}
+  ];
+  var spotter = {};
+  function startLevel4(){
+    spotter = {selected:{}, submitted:false};
+    var grid = document.getElementById("chipGrid");
+    grid.innerHTML = "";
+    // shuffle a copy for display order
+    var arr = DRUGS4.map(function(d,i){ return {d:d, i:i}; });
+    for(var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=arr[i]; arr[i]=arr[j]; arr[j]=t; }
+    arr.forEach(function(o){
+      var i = o.i, d = o.d;
+      var btn = document.createElement("button");
+      btn.className = "chip";
+      btn.setAttribute("data-i", i);
+      btn.innerHTML = d.name.replace("\n","<br><span style='font-weight:500;font-size:.68rem;'>")+"</span>";
+      btn.addEventListener("click", function(){
+        if(spotter.submitted) return;
+        spotter.selected[i] = !spotter.selected[i];
+        btn.classList.toggle("sel", !!spotter.selected[i]);
+      });
+      grid.appendChild(btn);
+    });
+    document.getElementById("spotterSubmit").disabled = false;
+    document.getElementById("spotterSubmit").textContent = "送出核對結果 ✅";
+    showScreen("screen-4");
+  }
+  document.getElementById("spotterSubmit").addEventListener("click", function(){
+    if(spotter.submitted) return;
+    spotter.submitted = true;
+    var mistakes = 0;
+    document.querySelectorAll("#chipGrid .chip").forEach(function(chip){
+      var i = parseInt(chip.getAttribute("data-i"),10);
+      var d = DRUGS4[i];
+      var sel = !!spotter.selected[i];
+      chip.classList.remove("sel");
+      if(d.ha && sel){ chip.classList.add("reveal-tp"); chip.insertAdjacentHTML("beforeend",'<span class="flag">⭐</span>'); }
+      else if(d.ha && !sel){ chip.classList.add("reveal-fn"); chip.insertAdjacentHTML("beforeend",'<span class="flag">😵</span>'); mistakes++; }
+      else if(!d.ha && sel){ chip.classList.add("reveal-fp"); chip.insertAdjacentHTML("beforeend",'<span class="flag">🙅</span>'); mistakes++; }
+      else { chip.classList.add("reveal-tn"); }
+    });
+    this.disabled = true;
+    var stars = starsFromMistakes(mistakes*2);
+    var self = this;
+    setTimeout(function(){
+      finishLevel(4, stars, mistakes===0 ? "太棒了，7 個高警訊藥物全部正確抓出！" : "有 "+mistakes+" 個判斷不太準確，再檢查一次吧！");
+    }, 700);
+  });
+
+  /* ================= LEVEL 6 : ORDER ================= */
+  var STEPS6 = [
+    "詢問病人服藥意願",
+    "核對病人手圈／進行病人辨識",
+    "第一讀：取對正確藥盒",
+    "第二讀：核對六對（病人／藥名／劑量／途徑／時間／理由）",
+    "Time out：再次核對總顆數或劑量",
+    "給藥，並親眼看病人服下",
+    "第三讀：歸藥或丟棄藥物",
+    "點選「給藥確認」完成紀錄"
+  ];
+  var order = {};
+  function startLevel6(){
+    order = {next:0, mistakes:0};
+    var seqEl = document.getElementById("seqList");
+    seqEl.innerHTML = "";
+    STEPS6.forEach(function(s, i){
+      var row = document.createElement("div");
+      row.className = "seqSlot";
+      row.id = "slot-"+i;
+      row.innerHTML = '<span class="n">'+(i+1)+'</span><span class="txt"></span>';
+      seqEl.appendChild(row);
+    });
+    var pool = STEPS6.map(function(s,i){ return {text:s, correctIndex:i}; });
+    for(var i=pool.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=pool[i]; pool[i]=pool[j]; pool[j]=t; }
+    var poolEl = document.getElementById("poolList");
+    poolEl.innerHTML = "";
+    pool.forEach(function(p){
+      var b = document.createElement("button");
+      b.className = "poolChip";
+      b.textContent = p.text;
+      b.addEventListener("click", function(){ tryStep(p.correctIndex, b); });
+      poolEl.appendChild(b);
+    });
+    document.getElementById("orderMistakes").textContent = "0";
+    showScreen("screen-6");
+  }
+  function tryStep(correctIndex, btn){
+    if(correctIndex === order.next){
+      var slot = document.getElementById("slot-"+order.next);
+      slot.classList.add("filled");
+      slot.querySelector(".txt").textContent = STEPS6[order.next];
+      btn.classList.add("used");
+      order.next++;
+      if(order.next === STEPS6.length){
+        var stars = starsFromMistakes(order.mistakes);
+        setTimeout(function(){ finishLevel(6, stars, "點錯 "+order.mistakes+" 次即完成完整給藥流程！"); }, 350);
+      }
+    } else {
+      order.mistakes++;
+      document.getElementById("orderMistakes").textContent = order.mistakes;
+      btn.classList.add("wrongFlash");
+      setTimeout(function(){ btn.classList.remove("wrongFlash"); }, 350);
+    }
+  }
+
+  /* ================= CERTIFICATE ================= */
+  function openCertificate(){
+    if(!allDone()){ renderMap(); showScreen("screen-map"); return; }
+    document.getElementById("certTotal").textContent = totalStars();
+    var grid = document.getElementById("certGrid");
+    grid.innerHTML = "";
+    LEVELS.forEach(function(lv){
+      var d = document.createElement("div");
+      d.className = "certItem";
+      d.innerHTML = "<div>"+lv.icon+" "+lv.title+"</div><div class='st'>"+"★".repeat(state.stars[lv.id]||0)+"☆".repeat(3-(state.stars[lv.id]||0))+"</div>";
+      grid.appendChild(d);
+    });
+    var d = new Date();
+    document.getElementById("certDate").textContent = "頒發日期："+d.getFullYear()+"/"+(d.getMonth()+1)+"/"+d.getDate();
+    var nameInput = document.getElementById("certName");
+    nameInput.value = state.name || "";
+    document.getElementById("certNameShow").textContent = state.name ? state.name : "護理新進人員";
+    fireConfetti();
+    showScreen("screen-cert");
+  }
+  document.getElementById("certName").addEventListener("input", function(e){
+    state.name = e.target.value;
+    persist();
+    document.getElementById("certNameShow").textContent = state.name ? state.name : "護理新進人員";
+  });
+  document.getElementById("resetProgress").addEventListener("click", function(){
+    if(!confirm("確定要重新挑戰全部六個關卡嗎？目前的星星紀錄將會清空。")) return;
+    state.stars = {1:null,2:null,3:null,4:null,5:null,6:null};
+    persist();
+    renderMap();
+    showScreen("screen-map");
+  });
+
+  /* ---------------- init ---------------- */
+  renderMap();
+  showScreen("screen-map");
+
+  /* hot reload snapshot (best-effort, no visible state changes needed since persisted via localStorage) */
+  try{
+    if(window.claude && window.claude.hot){
+      window.claude.hot.snapshot(function(){ return {}; });
+    }
+  }catch(e){}
+})();
+</script>
